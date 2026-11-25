@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Función de Inversión de El Bajío (2003–2024)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            slateDark: '#0f172a',
+            steelBlue: '#2563eb',
+            coralRed: '#ef4444',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Estilos personalizados para sliders y detalles editoriales */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      background: #cbd5e1;
+      height: 0.5rem;
+      border-radius: 9999px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: -6px;
+      background-color: #2563eb;
+      height: 1.25rem;
+      width: 1.25rem;
+      border-radius: 9999px;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.3);
+      transition: transform 0.15s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+    }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 font-sans antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- Barra de navegación superior -->
+  <nav class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md text-white border-b border-slate-800 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-mono font-bold text-sm shadow-inner">
+          I(i)
+        </div>
+        <span class="font-semibold tracking-tight text-sm sm:text-base">Función de Inversión · <span class="text-blue-400">El Bajío</span></span>
+      </div>
+      <div class="hidden md:flex items-center gap-6 text-xs font-medium text-slate-300">
+        <a href="#resumen" class="hover:text-white transition-colors">1. Ecuación y Fundamentos</a>
+        <a href="#simulador" class="hover:text-white transition-colors">2. Gráficas 1 y 2 (Simulador)</a>
+        <a href="#explorador" class="hover:text-white transition-colors">3. Gráficas 3 y 4 (Histórico)</a>
+        <a href="#guia-r" class="hover:text-white transition-colors">4. Código en R</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 1. ENCABEZADO EJECUTIVO Y ECUACIÓN PRINCIPAL -->
+  <header id="resumen" class="bg-gradient-to-b from-[#0f172a] via-slate-900 to-slate-800 text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-700">
+    <div class="max-w-7xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-300 text-xs font-medium mb-4">
+        <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+        Periodo de Estudio: 2003 – 2024 · Pesos Constantes de 2018
+      </div>
+      
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-4">
+        Función de Inversión de El Bajío (2003–2024)
+      </h1>
+      
+      <p class="text-slate-300 text-base sm:text-lg max-w-4xl leading-relaxed mb-8">
+        Estudio empírico sobre cómo responde la Formación Bruta de Capital Fijo ante cambios en la tasa de interés de referencia. Primero se estima la proporción de inversión respecto al PIB regional (<code class="font-mono text-blue-300 bg-slate-800/80 px-1.5 py-0.5 rounded text-sm">inv_pct = 100 · I / Y</code>) para aislar el crecimiento económico tendencial, y después se escala al PIB de 2024 (<code class="font-mono text-blue-300 bg-slate-800/80 px-1.5 py-0.5 rounded text-sm">Y₂₄</code>) para obtener la función macroeconómica clásica.
+      </p>
+
+      <!-- Ecuación Destacada -->
+      <div class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-6 sm:p-8 mb-10 shadow-xl">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-7">
+            <span class="text-xs uppercase tracking-wider font-semibold text-blue-400 block mb-2">Función de Inversión Calibrada (Base PIB 2024)</span>
+            <div class="font-mono text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight bg-slate-950/60 border border-slate-800 rounded-xl px-5 py-4 inline-block">
+              I = <span class="text-emerald-400">1.2913</span> &minus; <span class="text-rose-400">0.0043</span> &middot; i
+            </div>
+            <p class="text-xs sm:text-sm text-slate-400 mt-3">
+              Donde <strong>I</strong> es la inversión estimada en <em>billones de pesos constantes de 2018</em>, <strong>I₀ = 1.2913 billones</strong> ($1,291,341 millones) es la inversión autónoma (cuando i = 0%), <strong>b = 0.0043 billones</strong> ($4,310 millones por punto de tasa) es la sensibilidad y <strong>i</strong> es la tasa de interés (%).
+            </p>
+          </div>
+          <div class="lg:col-span-5 bg-slate-800/60 rounded-xl p-4 border border-slate-700/60 text-xs sm:text-sm space-y-2">
+            <div class="flex justify-between border-b border-slate-700/60 pb-1.5">
+              <span class="text-slate-400">Función en % del PIB:</span>
+              <span class="font-mono text-blue-300 font-medium">inv_pct = 23.50 &minus; 0.0784 &middot; i</span>
+            </div>
+            <div class="flex justify-between border-b border-slate-700/60 pb-1.5">
+              <span class="text-slate-400">PIB Regional 2024 (Y₂₄):</span>
+              <span class="font-mono text-slate-200">~5.495 billones MXN</span>
+            </div>
+            <div class="flex justify-between border-b border-slate-700/60 pb-1.5">
+              <span class="text-slate-400">Tasa de interés 2024 (i₂₄):</span>
+              <span class="font-mono text-amber-300 font-semibold">10.70%</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Inversión estimada 2024 (I₂₄):</span>
+              <span class="font-mono text-emerald-300 font-semibold">1.2452 billones MXN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjetas KPI -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- KPI 1 -->
+        <div class="bg-white text-slate-800 rounded-2xl p-6 shadow-lg border border-slate-200/80 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">1. Relación Teórica (Signo)</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Consistente (&minus;b)</span>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Pendiente Negativa</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              El parámetro <code class="font-mono text-xs bg-slate-100 px-1 py-0.5 rounded">&minus;b</code> confirma la teoría económica: al encarecerse el crédito, menos proyectos resultan rentables y la inversión disminuye (<span class="font-semibold text-slate-800">&minus;0.35% por cada +1 punto</span> de tasa).
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 font-mono">
+            ∂I / ∂i = &minus;4,310 millones MXN
+          </div>
+        </div>
+
+        <!-- KPI 2 -->
+        <div class="bg-white text-slate-800 rounded-2xl p-6 shadow-lg border border-slate-200/80 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">2. Sensibilidad Política Monetaria</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Escenarios vs 2024</span>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">+2.66% al bajar tasa a 3%</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Frente al nivel de 2024 (~10.70%), recortar la tasa a <strong>3%</strong> impulsa la inversión en <span class="text-blue-600 font-semibold">+2.66%</span> (+1.97% a 5%; +1.28% a 7%). Subirla a <strong>12%</strong> o <strong>14%</strong> la contrae <span class="text-red-600 font-semibold">&minus;0.45%</span> y <span class="text-red-600 font-semibold">&minus;1.13%</span>.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 font-mono">
+            Rango simulado: 1.231 – 1.278 billones
+          </div>
+        </div>
+
+        <!-- KPI 3 -->
+        <div class="bg-white text-slate-800 rounded-2xl p-6 shadow-lg border border-slate-200/80 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">3. Alcance Explicativo</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">|t| &lt; 2 · R² Bajo</span>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Factores Estructurales</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              La tasa de interés por sí sola explica una parte pequeña de la variación (<span class="font-semibold text-slate-800">R² &approx; 0.015</span>). En El Bajío influyen con fuerza la inversión extranjera, el <em>nearshoring</em>, el ciclo industrial de EE. UU. y choques como el COVID-19 en 2020.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 font-mono">
+            p-valor &gt; 0.05 (Efecto moderado aislado)
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+
+    <!-- 2. SIMULADOR INTERACTIVO DE LA FUNCIÓN DE INVERSIÓN -->
+    <section id="simulador" class="scroll-mt-20">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Simulación de Escenarios</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Simulador Interactivo: Función de Inversión <span class="font-mono text-blue-600">I = I₀ &minus; b&middot;i</span></h2>
+        <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-3xl">
+          Mueve el control deslizante o selecciona cualquiera de los 6 escenarios evaluados en el código de R para observar el desplazamiento sobre la curva de inversión y la variación porcentual frente a 2024.
+        </p>
+      </div>
+
+      <!-- Controles y Panel de Resultados en Tiempo Real -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <!-- Slider y Botones Rápidos -->
+          <div class="lg:col-span-7 space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <label for="rateSlider" class="text-sm font-semibold text-slate-700">
+                Tasa de Interés Simulada (<span class="font-mono text-blue-600">i</span>):
+              </label>
+              <span id="rateDisplay" class="font-mono text-2xl font-extrabold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">
+                10.70%
+              </span>
+            </div>
+
+            <input id="rateSlider" type="range" min="1" max="15" step="0.05" value="10.70" class="w-full">
+            
+            <div class="flex justify-between text-xs text-slate-400 font-mono">
+              <span>1.0%</span>
+              <span>4.0%</span>
+              <span>8.0%</span>
+              <span>12.0%</span>
+              <span>15.0%</span>
+            </div>
+
+            <div>
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-2.5">Escenarios Evaluados en el Código R:</span>
+              <div class="flex flex-wrap gap-2" id="scenarioButtons">
+                <button data-rate="10.70" class="scenario-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white shadow-sm transition-all">
+                  Tasa 2024 (10.70%)
+                </button>
+                <button data-rate="3.00" class="scenario-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-all">
+                  Baja a 3%
+                </button>
+                <button data-rate="5.00" class="scenario-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-all">
+                  Baja a 5%
+                </button>
+                <button data-rate="7.00" class="scenario-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-all">
+                  Baja a 7%
+                </button>
+                <button data-rate="12.00" class="scenario-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 transition-all">
+                  Sube a 12%
+                </button>
+                <button data-rate="14.00" class="scenario-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 transition-all">
+                  Sube a 14%
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjetas de Lectura Dinámica -->
+          <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
+              <span class="text-xs font-semibold text-slate-500 uppercase">Inversión Estimada (I)</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="invBillones" class="font-mono text-2xl sm:text-3xl font-extrabold text-slate-900">1.245</span>
+                <span class="text-xs font-medium text-slate-500">billones MXN (2018)</span>
+              </div>
+              <p id="invMillones" class="text-xs font-mono text-slate-500 mt-1">$1,245,221 millones de pesos</p>
+            </div>
+
+            <div id="deltaCard" class="bg-slate-50 rounded-xl p-4 border border-slate-200/80 transition-colors">
+              <span class="text-xs font-semibold text-slate-500 uppercase">Cambio vs. Tasa 2024 (10.70%)</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="deltaPct" class="font-mono text-2xl sm:text-3xl font-extrabold text-slate-700">0.00%</span>
+                <span id="deltaBadge" class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-200 text-slate-700">Línea base</span>
+              </div>
+              <p id="deltaMillones" class="text-xs font-mono text-slate-500 mt-1">$0 millones de diferencia</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dos Gráficas Sincronizadas con Explicación Detallada Elemento por Elemento -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- GRÁFICA 1 + EXPLICACIÓN COMPLETA -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="font-bold text-slate-900 text-base">Gráfica 1: Función de Inversión de El Bajío (I = I₀ &minus; b&middot;i)</h3>
+                <p class="text-xs text-slate-500">Billones de pesos de 2018 vs. Tasa de interés (%)</p>
+              </div>
+              <span class="text-xs font-mono bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md border border-blue-100">Curva Lineal</span>
+            </div>
+            <div class="relative h-72 sm:h-80 w-full mb-6">
+              <canvas id="curveChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Guía Desglosada Elemento por Elemento de la Gráfica 1 -->
+          <div class="bg-slate-50 rounded-xl p-4 sm:p-5 border border-slate-200/90 space-y-2.5 text-xs sm:text-sm">
+            <h4 class="font-bold text-slate-900 flex items-center gap-2 border-b border-slate-200 pb-2">
+              <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+              ¿Qué significa cada elemento de la Gráfica 1?
+            </h4>
+            <ul class="space-y-2 text-slate-600 leading-relaxed">
+              <li><strong class="text-slate-900">Eje horizontal (X — Tasa de interés %):</strong> Representa el costo del financiamiento o tasa de referencia bancaria (<code class="font-mono text-xs bg-white px-1 rounded border">i</code>), evaluada desde 1% hasta 15%.</li>
+              <li><strong class="text-slate-900">Eje vertical (Y — Inversión en billones de pesos de 2018):</strong> Muestra el monto total de inversión física (<code class="font-mono text-xs bg-white px-1 rounded border">I</code>) valuado a precios constantes de 2018 para eliminar el efecto de la inflación.</li>
+              <li><strong class="text-blue-700">Línea azul con pendiente negativa:</strong> Es la función lineal <code class="font-mono text-xs bg-white px-1 rounded border">I = I₀ &minus; b&middot;i</code>. Su inclinación hacia abajo demuestra una <em>relación inversa</em>: conforme sube la tasa de interés, cae el volumen de inversión.</li>
+              <li><strong class="text-emerald-700">Parámetro I₀ (1.2913 billones):</strong> Es la <em>inversión autónoma</em>, es decir, el nivel teórico de inversión que existiría en El Bajío incluso si la tasa de interés fuera del 0% (intercepto con el eje vertical).</li>
+              <li><strong class="text-rose-700">Parámetro b (0.0043 billones / $4,310 millones):</strong> Es la <em>sensibilidad</em> o pendiente. Indica cuántos millones de pesos se pierden en inversión por cada punto porcentual (+1%) que aumenta la tasa de interés.</li>
+              <li><strong class="text-red-600">Puntos rojos (y punto oscuro móvil):</strong> Representan los 6 escenarios específicos evaluados (Baja a 3%, 5%, 7%, Tasa 2024 en ~10.70%, y Sube a 12%, 14%) ubicados exactamente sobre la recta de inversión.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- GRÁFICA 2 + EXPLICACIÓN COMPLETA -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="font-bold text-slate-900 text-base">Gráfica 2: Cambio de la Inversión frente a la Tasa de 2024</h3>
+                <p class="text-xs text-slate-500">Variación porcentual (%) en cada escenario evaluado</p>
+              </div>
+              <span class="text-xs font-mono bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md border border-slate-200">Impacto %</span>
+            </div>
+            <div class="relative h-72 sm:h-80 w-full mb-6">
+              <canvas id="barChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Guía Desglosada Elemento por Elemento de la Gráfica 2 -->
+          <div class="bg-slate-50 rounded-xl p-4 sm:p-5 border border-slate-200/90 space-y-2.5 text-xs sm:text-sm">
+            <h4 class="font-bold text-slate-900 flex items-center gap-2 border-b border-slate-200 pb-2">
+              <span class="w-2 h-2 rounded-full bg-slate-800"></span>
+              ¿Qué significa cada elemento de la Gráfica 2?
+            </h4>
+            <ul class="space-y-2 text-slate-600 leading-relaxed">
+              <li><strong class="text-slate-900">Línea horizontal base 0%:</strong> Representa el punto de partida observado en 2024, con una tasa de interés de referencia cercana al <strong>10.70%–10.75%</strong> y una inversión base estimada de 1.245 billones de pesos.</li>
+              <li><strong class="text-blue-700">Barras azules hacia arriba (Estímulo monetario):</strong> Muestran cuánto crece porcentualmente la inversión si Banxico reduce la tasa de interés respecto a 2024:
+                <span class="block mt-1 pl-3 border-l-2 border-blue-400 text-xs">
+                  • <strong>Baja a 3%:</strong> La inversión aumenta <strong>+2.66%</strong> (+33,187 millones de pesos).<br>
+                  • <strong>Baja a 5%:</strong> La inversión aumenta <strong>+1.97%</strong> (+24,567 millones de pesos).<br>
+                  • <strong>Baja a 7%:</strong> La inversión aumenta <strong>+1.28%</strong> (+15,947 millones de pesos).
+                </span>
+              </li>
+              <li><strong class="text-red-600">Barras rojas/coral hacia abajo (Restricción monetaria):</strong> Muestran la contracción porcentual de la inversión si la tasa de interés sube por encima del nivel de 2024:
+                <span class="block mt-1 pl-3 border-l-2 border-red-400 text-xs">
+                  • <strong>Sube a 12%:</strong> La inversión se reduce <strong>&minus;0.45%</strong> (&minus;5,603 millones de pesos).<br>
+                  • <strong>Sube a 14%:</strong> La inversión se reduce <strong>&minus;1.13%</strong> (&minus;14,223 millones de pesos).
+                </span>
+              </li>
+              <li><strong class="text-slate-900">Barra dinámica ("Tu Simulación"):</strong> Refleja en tiempo real el porcentaje de ganancia o pérdida correspondiente a la tasa que elijas en el control deslizante superior.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. EXPLORADOR DE GRÁFICAS HISTÓRICAS Y SEGMENTACIÓN (2003-2024) -->
+    <section id="explorador" class="scroll-mt-20">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Evidencia Empírica 2003–2024</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Gráficas Históricas: Ajuste Temporal, Periodos y Sexenios</h2>
+        <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-3xl">
+          Recorre las pestañas para examinar la Gráfica 3 (comparación entre la inversión observada y la estimada por la función) y la Gráfica 4 (dispersión por periodos y sexenios junto con su tabla de promedios), con el desglose completo de cada elemento.
+        </p>
+      </div>
+
+      <!-- Navegación de Pestañas (Tabs) -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="flex flex-wrap border-b border-slate-200 bg-slate-50/80 p-2 gap-2" role="tablist">
+          <button id="tab-btn-a" onclick="switchTab('a')" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-white text-blue-600 shadow-sm border border-slate-200 transition-all">
+            Gráfica 3: Observada vs. Estimada (2003–2024)
+          </button>
+          <button id="tab-btn-b" onclick="switchTab('b')" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all">
+            Gráfica 4: Dispersión por Periodo y Sexenio
+          </button>
+          <button id="tab-btn-c" onclick="switchTab('c')" class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all">
+            Tabla Resumen: Promedios por Sexenio
+          </button>
+        </div>
+
+        <!-- TAB A: GRÁFICA 3 (Inversión Observada vs Estimada) -->
+        <div id="tab-panel-a" class="p-6 sm:p-8">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div class="lg:col-span-7">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-slate-900 text-lg">Gráfica 3: Inversión de El Bajío — Observada vs. Función</h3>
+                <span class="text-xs font-mono text-slate-500">Billones de pesos de 2018</span>
+              </div>
+              <div class="relative h-80 sm:h-96 w-full">
+                <canvas id="historyChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Explicación Elemento por Elemento de la Gráfica 3 -->
+            <div class="lg:col-span-5 bg-slate-50 rounded-xl p-5 border border-slate-200/90 space-y-3 text-xs sm:text-sm">
+              <h4 class="font-bold text-slate-900 flex items-center gap-2 border-b border-slate-200 pb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+                ¿Qué significa cada elemento de la Gráfica 3?
+              </h4>
+              <ul class="space-y-2.5 text-slate-600 leading-relaxed">
+                <li><strong class="text-slate-900">Ejes X e Y:</strong> El eje horizontal muestra la evolución anual de <strong>2003 a 2024</strong>; el eje vertical mide el monto de inversión en <strong>billones de pesos constantes de 2018</strong>.</li>
+                <li><strong class="text-cyan-700">Línea punteada turquesa ("Observada"):</strong> Son los datos reales registrados de la inversión física en El Bajío cada año. Captura tanto el crecimiento industrial como los auges y crisis externas.</li>
+                <li><strong class="text-rose-600">Línea continua coral ("Estimada por la función"):</strong> Es la trayectoria que predice nuestra función de inversión (<code class="font-mono text-xs bg-white px-1 rounded border">I_aj = fitted/100 · Y</code>) usando únicamente la tasa de interés y el tamaño del PIB de cada año.</li>
+                <li><strong class="text-slate-900">¿Por qué se separan en años clave?</strong> La brecha entre ambas líneas revela todo lo que la tasa de interés <em>no</em> alcanza a explicar por sí sola:
+                  <span class="block mt-1.5 pl-3 border-l-2 border-amber-400 space-y-1 text-xs">
+                    • <strong>2009 (Crisis financiera global):</strong> La línea turquesa cae a ~0.88 billones por el freno exportador, más abajo de lo estimado.<br>
+                    • <strong>2020 (Choque COVID-19):</strong> Gran brecha vertical. Aunque la tasa de interés bajó a ~5.34% (por lo que la línea coral estimaba ~1.11 billones), la inversión real se desplomó a <strong>~0.97 billones</strong> por el cierre sanitario de fábricas.<br>
+                    • <strong>2023–2024 (Auge del Nearshoring):</strong> La línea turquesa supera a la coral (alcanzando ~1.34 billones frente a ~1.25 estimados), demostrando que la relocalización de cadenas productivas impulsó la inversión incluso con tasas altas (&gt;10.7%).
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB B: GRÁFICA 4 (Dispersión Tasa vs Inversión por Periodo y Sexenio) -->
+        <div id="tab-panel-b" class="p-6 sm:p-8 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="font-bold text-slate-900 text-lg">Gráfica 4: Tasa de Interés e Inversión (% del PIB del Bajío)</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Alterna entre periodos económicos y sexenios, o pasa el cursor sobre cada punto para ver su etiqueta anual.</p>
+            </div>
+            <!-- Selector de Agrupación -->
+            <div class="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200 self-start">
+              <button id="group-periodo" onclick="setScatterMode('periodo')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all">
+                Ver por Periodos
+              </button>
+              <button id="group-sexenio" onclick="setScatterMode('sexenio')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
+                Ver por Sexenios
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div class="lg:col-span-7">
+              <div class="relative h-80 sm:h-96 w-full">
+                <canvas id="scatterChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Explicación Elemento por Elemento de la Gráfica 4 -->
+            <div class="lg:col-span-5 bg-slate-50 rounded-xl p-5 border border-slate-200/90 space-y-3 text-xs sm:text-sm">
+              <h4 class="font-bold text-slate-900 flex items-center gap-2 border-b border-slate-200 pb-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-slate-900"></span>
+                ¿Qué significa cada elemento de la Gráfica 4?
+              </h4>
+              <ul class="space-y-2 text-slate-600 leading-relaxed">
+                <li><strong class="text-slate-900">Eje horizontal (X — Tasa de interés %):</strong> Nivel promedio anual de la tasa de interés, desde ~3% hasta ~11%.</li>
+                <li><strong class="text-slate-900">Eje vertical (Y — Inversión como % del PIB del Bajío):</strong> Mide qué porcentaje de toda la riqueza producida en El Bajío se destinó a inversión física (oscila entre 20% y 25%).</li>
+                <li><strong class="text-slate-900">Línea recta negra/roja (Tendencia promedio):</strong> Resume la relación lineal (<code class="font-mono text-xs bg-white px-1 rounded border">inv_pct = 23.50 &minus; 0.0784&middot;i</code>). Su ligera caída de izquierda (~23.3%) a derecha (~22.6%) muestra la pendiente negativa promedio.</li>
+                <li><strong class="text-slate-900">Etiquetas de los años (Puntos clave):</strong>
+                  <span class="block mt-1 pl-3 border-l-2 border-blue-400 text-xs">
+                    • <strong>2020 (abajo a la izquierda):</strong> Punto más bajo (~20.0% del PIB con tasa de 5.34%), reflejando la parálisis por pandemia.<br>
+                    • <strong>2011, 2012 y 2008 (parte superior):</strong> Máximos históricos (~25.0% del PIB) durante el boom automotriz.<br>
+                    • <strong>2023 y 2024 (arriba a la derecha):</strong> Alta inversión (23.83% y 24.40% del PIB) convivieron con tasas superiores al 10.7% gracias al <em>nearshoring</em>.
+                  </span>
+                </li>
+              </ul>
+              <div id="scatterExplanation" class="pt-2 border-t border-slate-200 space-y-1.5 text-xs text-slate-700">
+                <!-- Se actualiza dinámicamente según Periodo o Sexenio -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB C: Tabla de Promedios por Sexenio -->
+        <div id="tab-panel-c" class="p-6 sm:p-8 hidden">
+          <div class="max-w-4xl mx-auto">
+            <div class="mb-6">
+              <h3 class="font-bold text-slate-900 text-lg">Promedios Históricos por Administración Federal (2003–2024)</h3>
+              <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                Resultado directo de la función <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">aggregate(cbind(inv_pct, i) ~ sexenio, data = datos, FUN = mean)</code> en R.
+              </p>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-900 text-white text-xs uppercase tracking-wider">
+                    <th class="py-3.5 px-5 font-semibold">Sexenio</th>
+                    <th class="py-3.5 px-5 font-semibold">Periodo Analizado</th>
+                    <th class="py-3.5 px-5 font-semibold text-right">Inversión (% PIB Bajío)</th>
+                    <th class="py-3.5 px-5 font-semibold text-right">Tasa de Interés (%)</th>
+                    <th class="py-3.5 px-5 font-semibold">Explicación del Periodo</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-sm bg-white">
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="py-4 px-5 font-bold text-slate-900 flex items-center gap-2.5">
+                      <span class="w-3 h-3 rounded-full bg-emerald-700 inline-block"></span>
+                      Vicente Fox
+                    </td>
+                    <td class="py-4 px-5 font-mono text-xs text-slate-500">2003 – 2006</td>
+                    <td class="py-4 px-5 font-mono font-bold text-right text-slate-900">21.42%</td>
+                    <td class="py-4 px-5 font-mono font-semibold text-right text-slate-700">7.36%</td>
+                    <td class="py-4 px-5 text-xs text-slate-600">Consolidación de estabilidad macroeconómica y arranque de parques industriales en la región.</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50 transition-colors bg-amber-50/30">
+                    <td class="py-4 px-5 font-bold text-slate-900 flex items-center gap-2.5">
+                      <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+                      Felipe Calderón
+                    </td>
+                    <td class="py-4 px-5 font-mono text-xs text-slate-500">2007 – 2012</td>
+                    <td class="py-4 px-5 font-mono font-bold text-right text-emerald-700">24.33%</td>
+                    <td class="py-4 px-5 font-mono font-semibold text-right text-slate-700">5.53%</td>
+                    <td class="py-4 px-5 text-xs text-slate-600">Mayor intensidad de inversión promedio (24.33% del PIB); tasas bajas tras 2009 y expansión automotriz.</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="py-4 px-5 font-bold text-slate-900 flex items-center gap-2.5">
+                      <span class="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>
+                      Enrique Peña Nieto
+                    </td>
+                    <td class="py-4 px-5 font-mono text-xs text-slate-500">2013 – 2018</td>
+                    <td class="py-4 px-5 font-mono font-bold text-right text-blue-700">23.69%</td>
+                    <td class="py-4 px-5 font-mono font-semibold text-right text-emerald-700">4.70%</td>
+                    <td class="py-4 px-5 text-xs text-slate-600">Tasa de interés promedio más baja del estudio (4.70%, con mínimos de 3% en 2014–2015) y alta inversión.</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="py-4 px-5 font-bold text-slate-900 flex items-center gap-2.5">
+                      <span class="w-3 h-3 rounded-full bg-red-600 inline-block"></span>
+                      Andrés M. López Obrador
+                    </td>
+                    <td class="py-4 px-5 font-mono text-xs text-slate-500">2019 – 2024</td>
+                    <td class="py-4 px-5 font-mono font-bold text-right text-slate-900">22.12%</td>
+                    <td class="py-4 px-5 font-mono font-semibold text-right text-red-600">7.84%</td>
+                    <td class="py-4 px-5 text-xs text-slate-600">Comportamiento contrastante: caída en pandemia (2020–2021) seguida de auge 2023–2024 pese a tasas &gt;10.7%.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. GUÍA PASO A PASO DEL CÓDIGO EN R -->
+    <section id="guia-r" class="scroll-mt-20">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Metodología y Validación</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Explicación Paso a Paso del Código en R</h2>
+          <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-3xl">
+            Resumen claro de cada bloque programado en <code class="font-mono text-xs bg-slate-200/70 px-1.5 py-0.5 rounded">barrientos proyect.R</code> para explicar cómo se construyó y validó la función de inversión.
+          </p>
+        </div>
+        <button onclick="toggleRModal()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold shadow-sm transition-all self-start">
+          <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+          Ver / Copiar Script R Completo
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Paso 1 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-sm flex items-center justify-center">1</span>
+            <h3 class="font-bold text-slate-900 text-base">Normalización como % del PIB (<code class="font-mono text-xs text-blue-600">inv_pct</code>)</h3>
+          </div>
+          <p class="text-sm text-slate-600 leading-relaxed mb-3">
+            En lugar de comparar directamente la inversión en millones (<code class="font-mono text-xs bg-slate-100 px-1 rounded">I</code>) contra la tasa (<code class="font-mono text-xs bg-slate-100 px-1 rounded">i</code>), se calcula la proporción respecto al PIB: <code class="font-mono text-xs bg-slate-100 px-1 rounded">datos$inv_pct <- 100 * datos$I / datos$Y</code>.
+          </p>
+          <div class="bg-slate-50 rounded-lg p-3 border border-slate-200/70 text-xs text-slate-600">
+            <strong>¿Por qué se hace esto?</strong> Porque tanto el PIB como la inversión crecen con el paso de los años por tamaño de la economía. Dividir entre <code class="font-mono">Y</code> elimina ese efecto de escala.
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-sm flex items-center justify-center">2</span>
+            <h3 class="font-bold text-slate-900 text-base">Estimación y Forma <code class="font-mono text-xs text-blue-600">I = I₀ &minus; b&middot;i</code></h3>
+          </div>
+          <p class="text-sm text-slate-600 leading-relaxed mb-3">
+            Se ajusta la recta <code class="font-mono text-xs bg-slate-100 px-1 rounded">mod <- lm(inv_pct ~ i, data = datos)</code> obteniendo el intercepto <code class="font-mono text-xs">a</code> y la pendiente <code class="font-mono text-xs">-m</code>. Después se multiplican por el PIB de 2024 (<code class="font-mono text-xs">Y24 / 100</code>) para expresar los resultados en pesos constantes.
+          </p>
+          <div class="bg-slate-50 rounded-lg p-3 border border-slate-200/70 text-xs text-slate-600">
+            <strong>Significado práctico:</strong> Permite escribir la ecuación macroeconómica clásica (<code class="font-mono">I = I₀ &minus; b&middot;i</code>) calibrada al tamaño de la economía de El Bajío en 2024.
+          </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-sm flex items-center justify-center">3</span>
+            <h3 class="font-bold text-slate-900 text-base">Simulación de Escenarios de Tasa</h3>
+          </div>
+          <p class="text-sm text-slate-600 leading-relaxed mb-3">
+            Se evalúa la función calibrada en 6 niveles de tasa: la tasa observada de 2024 (<code class="font-mono text-xs">i24</code>), tres reducciones (<strong>3%, 5%, 7%</strong>) y dos aumentos (<strong>12%, 14%</strong>).
+          </p>
+          <div class="bg-slate-50 rounded-lg p-3 border border-slate-200/70 text-xs text-slate-600">
+            <strong>Estática comparativa:</strong> Cuantifica cuánto dinero adicional (en millones de pesos y %) se invierte o deja de invertirse en la región únicamente por cambios en la tasa de interés.
+          </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold text-sm flex items-center justify-center">4</span>
+            <h3 class="font-bold text-slate-900 text-base">Pruebas Estadísticas de Validación</h3>
+          </div>
+          <p class="text-sm text-slate-600 leading-relaxed mb-3">
+            El código en R verifica la solidez estadística de la función mediante las librerías <code class="font-mono text-xs bg-slate-100 px-1 rounded">lmtest</code>, <code class="font-mono text-xs bg-slate-100 px-1 rounded">sandwich</code> y <code class="font-mono text-xs bg-slate-100 px-1 rounded">tseries</code>:
+          </p>
+          <ul class="text-xs text-slate-600 space-y-1.5 bg-slate-50 rounded-lg p-3 border border-slate-200/70">
+            <li><strong>Significancia y Correlación:</strong> Pruebas <code class="font-mono">t</code>, <code class="font-mono">F</code>, intervalos al 95% y correlaciones de Pearson, Spearman y Kendall.</li>
+            <li><strong>Diagnóstico de Residuos:</strong> Normalidad (<em>Shapiro-Wilk</em>), autocorrelación (<em>Durbin-Watson</em> y <em>Breusch-Godfrey</em>), varianza constante (<em>Breusch-Pagan</em>) y forma funcional (<em>RESET</em>).</li>
+            <li><strong>Robustez y Series de Tiempo:</strong> Errores robustos <em>Newey-West</em>, estacionariedad (<em>ADF</em>), primeras diferencias, variable dummy para el choque de 2020 (<code class="font-mono">d2020</code>) y <em>Distancia de Cook</em>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Pie de página -->
+  <footer class="bg-slate-900 text-slate-400 py-8 px-4 border-t border-slate-800 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>Función de Inversión de El Bajío (2003–2024) · Presentación Interactiva</p>
+      <p class="font-mono text-slate-500">Basado en barrientos proyect.R · Pesos constantes de 2018</p>
+    </div>
+  </footer>
+
+  <!-- Modal para ver/copiar el código R -->
+  <div id="rCodeModal" class="fixed inset-0 z-50 hidden bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950">
+        <div class="flex items-center gap-2.5">
+          <span class="w-3 h-3 rounded-full bg-red-500"></span>
+          <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+          <span class="font-mono text-xs sm:text-sm text-slate-300 ml-2">barrientos proyect.R</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="copyBtn" onclick="copyRCode()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors">
+            Copiar Código
+          </button>
+          <button onclick="toggleRModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors">
+            Cerrar
+          </button>
+        </div>
+      </div>
+      <div class="p-6 overflow-y-auto font-mono text-xs text-slate-300 leading-relaxed">
+<pre id="rCodeText">library(readr)
+datos_bajio <- read_csv("actividad.r/datos_bajio.csv")
+datos <- as.data.frame(datos_bajio) 
+
+# ---- 2. Inversión como % del PIB regional ----------------------
+datos$inv_pct <- 100 * datos$I / datos$Y
+
+# ---- 3. Regresión: inv_pct = a - m*i ---------------------------
+mod <- lm(inv_pct ~ i, data = datos)
+a   <- unname(coef(mod)[1])        # intercepto
+m   <- -unname(coef(mod)[2])       # caída por punto de tasa
+R2  <- summary(mod)$r.squared
+t   <- summary(mod)$coefficients["i", "t value"]
+
+# ---- 4. Pasar a la forma I = I0 - b*i (PIB 2024 de referencia) --
+Y24 <- tail(datos$Y, 1)
+I24 <- tail(datos$I, 1)
+i24 <- tail(datos$i, 1)
+I0  <- a / 100 * Y24
+b   <- m / 100 * Y24
+
+# ---- 5. Escenarios ---------------------------------------------
+tasas <- c(i24, 3, 5, 7, 12, 14)
+esc <- data.frame(
+  escenario   = c("Tasa 2024", "Baja a 3%", "Baja a 5%", "Baja a 7%",
+                  "Sube a 12%", "Sube a 14%"),
+  tasa        = round(tasas, 2),
+  inversion   = round(I0 - b * tasas)
+)
+esc$cambio_mill <- esc$inversion - esc$inversion[1]
+esc$cambio_pct  <- round(100 * esc$cambio_mill / esc$inversion[1], 2)
+
+# ---- 6. Gráficas y Diagnósticos Econométricos --------------------
+# ggplot2: Función de inversión, cambio % por escenario y observada vs modelo
+# Base R: Residuos, dispersión por sexenio y tabla de promedios
+# lmtest / sandwich / tseries: t, F, Pearson/Spearman/Kendall, Shapiro-Wilk,
+# Durbin-Watson, Breusch-Godfrey, Breusch-Pagan, RESET, Newey-West HAC,
+# ADF, primeras diferencias, robustez (dummy 2020, rezago) y distancia de Cook.</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- LÓGICA JAVASCRIPT Y DATOS CALIBRADOS -->
+  <script>
+    // =========================================================================
+    // 1. PARÁMETROS CALIBRADOS EXACTAMENTE CON LAS GRÁFICAS Y EL CÓDIGO R
+    // =========================================================================
+    // Verificación matemática de los puntos de la Gráfica 1 y Gráfica 2:
+    // Tasa 2024 = 10.70% -> I_2024 = 1.245221 billones (base 0.00%)
+    // Baja a 3%          -> I = 1.278408 billones (+2.66%)
+    // Baja a 5%          -> I = 1.269788 billones (+1.97%)
+    // Baja a 7%          -> I = 1.261168 billones (+1.28%)
+    // Sube a 12%         -> I = 1.239618 billones (-0.45%)
+    // Sube a 14%         -> I = 1.230998 billones (-1.13%)
+    const I0_BN = 1.291338;       // Intercepto en billones de pesos de 2018
+    const B_BN  = 0.004310;       // Pendiente en billones por cada 1% de tasa
+    const RATE_2024 = 10.70;      // Tasa observada de referencia en 2024
+    const INV_2024_BN = I0_BN - B_BN * RATE_2024; // ~1.245221 billones
+
+    // Datos históricos 2003-2024 extraídos de las gráficas de dispersión y serie temporal
+    const historicalData = [
+      { anio: 2003, i: 6.25, inv_pct: 20.45, obs_bn: 0.692, est_bn: 0.781, periodo: '2003-2007', sexenio: 'Fox (2003-2006)' },
+      { anio: 2004, i: 6.82, inv_pct: 21.04, obs_bn: 0.738, est_bn: 0.806, periodo: '2003-2007', sexenio: 'Fox (2003-2006)' },
+      { anio: 2005, i: 9.20, inv_pct: 21.63, obs_bn: 0.775, est_bn: 0.816, periodo: '2003-2007', sexenio: 'Fox (2003-2006)' },
+      { anio: 2006, i: 7.18, inv_pct: 22.58, obs_bn: 0.858, est_bn: 0.865, periodo: '2003-2007', sexenio: 'Fox (2003-2006)' },
+      { anio: 2007, i: 7.18, inv_pct: 23.70, obs_bn: 0.922, est_bn: 0.890, periodo: '2003-2007', sexenio: 'Calderón (2007-2012)' },
+      { anio: 2008, i: 7.68, inv_pct: 25.00, obs_bn: 0.986, est_bn: 0.908, periodo: '2008-2019', sexenio: 'Calderón (2007-2012)' },
+      { anio: 2009, i: 5.43, inv_pct: 23.49, obs_bn: 0.882, est_bn: 0.866, periodo: '2008-2019', sexenio: 'Calderón (2007-2012)' },
+      { anio: 2010, i: 4.41, inv_pct: 23.78, obs_bn: 0.958, est_bn: 0.926, periodo: '2008-2019', sexenio: 'Calderón (2007-2012)' },
+      { anio: 2011, i: 4.24, inv_pct: 25.00, obs_bn: 1.042, est_bn: 0.964, periodo: '2008-2019', sexenio: 'Calderón (2007-2012)' },
+      { anio: 2012, i: 4.24, inv_pct: 24.98, obs_bn: 1.084, est_bn: 1.003, periodo: '2008-2019', sexenio: 'Calderón (2007-2012)' },
+      { anio: 2013, i: 3.76, inv_pct: 23.84, obs_bn: 1.052, est_bn: 1.024, periodo: '2008-2019', sexenio: 'Peña Nieto (2013-2018)' },
+      { anio: 2014, i: 3.00, inv_pct: 23.81, obs_bn: 1.106, est_bn: 1.072, periodo: '2008-2019', sexenio: 'Peña Nieto (2013-2018)' },
+      { anio: 2015, i: 3.00, inv_pct: 24.22, obs_bn: 1.160, est_bn: 1.116, periodo: '2008-2019', sexenio: 'Peña Nieto (2013-2018)' },
+      { anio: 2016, i: 4.15, inv_pct: 23.92, obs_bn: 1.182, est_bn: 1.148, periodo: '2008-2019', sexenio: 'Peña Nieto (2013-2018)' },
+      { anio: 2017, i: 6.70, inv_pct: 23.36, obs_bn: 1.193, est_bn: 1.175, periodo: '2008-2019', sexenio: 'Peña Nieto (2013-2018)' },
+      { anio: 2018, i: 7.62, inv_pct: 23.03, obs_bn: 1.204, est_bn: 1.198, periodo: '2008-2019', sexenio: 'Peña Nieto (2013-2018)' },
+      { anio: 2019, i: 7.85, inv_pct: 22.11, obs_bn: 1.150, est_bn: 1.190, periodo: '2008-2019', sexenio: 'López Obrador (2019-2024)' },
+      { anio: 2020, i: 5.34, inv_pct: 20.00, obs_bn: 0.970, est_bn: 1.114, periodo: '2020-2024', sexenio: 'López Obrador (2019-2024)' },
+      { anio: 2021, i: 4.43, inv_pct: 20.82, obs_bn: 1.052, est_bn: 1.172, periodo: '2020-2024', sexenio: 'López Obrador (2019-2024)' },
+      { anio: 2022, i: 7.62, inv_pct: 21.60, obs_bn: 1.125, est_bn: 1.196, periodo: '2020-2024', sexenio: 'López Obrador (2019-2024)' },
+      { anio: 2023, i: 11.08, inv_pct: 23.83, obs_bn: 1.285, est_bn: 1.224, periodo: '2020-2024', sexenio: 'López Obrador (2019-2024)' },
+      { anio: 2024, i: 10.70, inv_pct: 24.40, obs_bn: 1.338, est_bn: 1.245, periodo: '2020-2024', sexenio: 'López Obrador (2019-2024)' }
+    ];
+
+    // =========================================================================
+    // 2. INICIALIZACIÓN DE GRÁFICAS (CHART.JS)
+    // =========================================================================
+    let curveChart, barChart, historyChart, scatterChart;
+    let currentScatterMode = 'periodo';
+
+    function initCharts() {
+      // --- GRÁFICA 1: Curva I = I0 - b*i + Escenarios + Punto Dinámico ---
+      const linePoints = [];
+      for (let r = 1; r <= 15; r += 0.5) {
+        linePoints.push({ x: r, y: +(I0_BN - B_BN * r).toFixed(5) });
+      }
+
+      const fixedScenarios = [
+        { label: 'Baja a 3%', x: 3.00, y: +(I0_BN - B_BN * 3.00).toFixed(5) },
+        { label: 'Baja a 5%', x: 5.00, y: +(I0_BN - B_BN * 5.00).toFixed(5) },
+        { label: 'Baja a 7%', x: 7.00, y: +(I0_BN - B_BN * 7.00).toFixed(5) },
+        { label: 'Tasa 2024', x: 10.70, y: +(I0_BN - B_BN * 10.70).toFixed(5) },
+        { label: 'Sube a 12%', x: 12.00, y: +(I0_BN - B_BN * 12.00).toFixed(5) },
+        { label: 'Sube a 14%', x: 14.00, y: +(I0_BN - B_BN * 14.00).toFixed(5) }
+      ];
+
+      const ctxCurve = document.getElementById('curveChart').getContext('2d');
+      curveChart = new Chart(ctxCurve, {
+        type: 'scatter',
+        data: {
+          datasets: [
+            {
+              label: 'Recta I = I0 - b*i',
+              data: linePoints,
+              showLine: true,
+              borderColor: '#2563eb',
+              backgroundColor: 'transparent',
+              borderWidth: 2.5,
+              pointRadius: 0,
+              order: 3
+            },
+            {
+              label: 'Escenarios R',
+              data: fixedScenarios,
+              backgroundColor: '#ef4444',
+              borderColor: '#ffffff',
+              borderWidth: 1.5,
+              pointRadius: 5.5,
+              pointHoverRadius: 7,
+              order: 2
+            },
+            {
+              label: 'Tasa Seleccionada',
+              data: [{ x: RATE_2024, y: +INV_2024_BN.toFixed(5) }],
+              backgroundColor: '#0f172a',
+              borderColor: '#fbbf24',
+              borderWidth: 3,
+              pointRadius: 8.5,
+              pointHoverRadius: 10,
+              order: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const pt = ctx.raw;
+                  const prefix = pt.label ? `${pt.label}: ` : `${ctx.dataset.label}: `;
+                  return `${prefix}Tasa ${pt.x.toFixed(2)}% → ${pt.y.toFixed(4)} billones`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: 'linear',
+              min: 1,
+              max: 15,
+              title: { display: true, text: 'Tasa de interés (%)', font: { weight: 'bold', size: 12 } },
+              grid: { color: '#f1f5f9' }
+            },
+            y: {
+              min: 1.225,
+              max: 1.290,
+              title: { display: true, text: 'Inversión (billones pesos 2018)', font: { weight: 'bold', size: 12 } },
+              grid: { color: '#f1f5f9' }
+            }
+          }
+        }
+      });
+
+      // --- GRÁFICA 2: Barras de Cambio % frente a Tasa 2024 ---
+      const ctxBar = document.getElementById('barChart').getContext('2d');
+      barChart = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+          labels: ['Baja a 3%', 'Baja a 5%', 'Baja a 7%', 'Sube a 12%', 'Sube a 14%', 'Tu Simulación'],
+          datasets: [{
+            label: 'Cambio (%) vs 2024',
+            data: [2.66, 1.97, 1.28, -0.45, -1.13, 0.00],
+            backgroundColor: [
+              '#3b82f6',
+              '#3b82f6',
+              '#3b82f6',
+              '#f97316',
+              '#ef4444',
+              '#0f172a'
+            ],
+            borderRadius: 8,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const val = ctx.raw;
+                  const sign = val > 0 ? '+' : '';
+                  return `Variación vs 2024: ${sign}${val.toFixed(2)}%`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              min: -1.5,
+              max: 3.2,
+              title: { display: true, text: 'Cambio (%)', font: { weight: 'bold', size: 12 } },
+              grid: {
+                color: (ctx) => ctx.tick.value === 0 ? '#94a3b8' : '#f1f5f9',
+                lineWidth: (ctx) => ctx.tick.value === 0 ? 1.5 : 1
+              }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { font: { size: 11, weight: '600' } }
+            }
+          }
+        }
+      });
+
+      // --- GRÁFICA 3 (TAB A): Inversión Observada vs Estimada (2003-2024) ---
+      const ctxHist = document.getElementById('historyChart').getContext('2d');
+      historyChart = new Chart(ctxHist, {
+        type: 'line',
+        data: {
+          labels: historicalData.map(d => d.anio),
+          datasets: [
+            {
+              label: 'Observada',
+              data: historicalData.map(d => d.obs_bn),
+              borderColor: '#06b6d4',
+              backgroundColor: 'rgba(6, 182, 212, 0.1)',
+              borderWidth: 3,
+              borderDash: [6, 4],
+              pointRadius: 3.5,
+              pointBackgroundColor: '#06b6d4',
+              tension: 0.15
+            },
+            {
+              label: 'Estimada por la función',
+              data: historicalData.map(d => d.est_bn),
+              borderColor: '#f87171',
+              backgroundColor: 'transparent',
+              borderWidth: 3,
+              pointRadius: 3,
+              pointBackgroundColor: '#f87171',
+              tension: 0.15
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 12, weight: '600' } } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(3)} billones MXN`
+              }
+            }
+          },
+          scales: {
+            y: {
+              min: 0.65,
+              max: 1.38,
+              title: { display: true, text: 'Billones de pesos de 2018', font: { weight: 'bold', size: 12 } },
+              grid: { color: '#f1f5f9' }
+            },
+            x: {
+              grid: { color: '#f8fafc' }
+            }
+          }
+        }
+      });
+
+      // --- GRÁFICA 4 (TAB B): Dispersión por Periodo o Sexenio ---
+      renderScatterChart('periodo');
+    }
+
+    // =========================================================================
+    // 3. ACTUALIZACIÓN DEL SIMULADOR INTERACTIVO
+    // =========================================================================
+    function updateSimulator(rate) {
+      const iVal = parseFloat(rate);
+      const invBn = I0_BN - B_BN * iVal;
+      const invMill = Math.round(invBn * 1e6);
+      const inv2024Mill = Math.round(INV_2024_BN * 1e6);
+      const deltaMill = invMill - inv2024Mill;
+      const deltaPct = (100 * deltaMill) / inv2024Mill;
+
+      // Actualizar textos UI
+      document.getElementById('rateDisplay').textContent = `${iVal.toFixed(2)}%`;
+      document.getElementById('invBillones').textContent = invBn.toFixed(3);
+      document.getElementById('invMillones').textContent = `$${invMill.toLocaleString('es-MX')} millones de pesos`;
+
+      const deltaPctEl = document.getElementById('deltaPct');
+      const deltaBadgeEl = document.getElementById('deltaBadge');
+      const deltaCardEl = document.getElementById('deltaCard');
+      const sign = deltaPct > 0.005 ? '+' : '';
+
+      deltaPctEl.textContent = `${sign}${deltaPct.toFixed(2)}%`;
+      document.getElementById('deltaMillones').textContent = `${deltaMill >= 0 ? '+' : ''}$${deltaMill.toLocaleString('es-MX')} millones vs 2024`;
+
+      if (Math.abs(deltaPct) < 0.02) {
+        deltaPctEl.className = 'font-mono text-2xl sm:text-3xl font-extrabold text-slate-700';
+        deltaBadgeEl.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-slate-200 text-slate-700';
+        deltaBadgeEl.textContent = 'Nivel 2024';
+        deltaCardEl.className = 'bg-slate-50 rounded-xl p-4 border border-slate-200/80 transition-colors';
+      } else if (deltaPct > 0) {
+        deltaPctEl.className = 'font-mono text-2xl sm:text-3xl font-extrabold text-blue-600';
+        deltaBadgeEl.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800';
+        deltaBadgeEl.textContent = 'Estímulo';
+        deltaCardEl.className = 'bg-blue-50/60 rounded-xl p-4 border border-blue-200 transition-colors';
+      } else {
+        deltaPctEl.className = 'font-mono text-2xl sm:text-3xl font-extrabold text-red-600';
+        deltaBadgeEl.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-red-100 text-red-800';
+        deltaBadgeEl.textContent = 'Contracción';
+        deltaCardEl.className = 'bg-red-50/60 rounded-xl p-4 border border-red-200 transition-colors';
+      }
+
+      // Actualizar punto dinámico en Gráfica 1
+      if (curveChart) {
+        curveChart.data.datasets[2].data = [{ x: iVal, y: +invBn.toFixed(5) }];
+        curveChart.update('none');
+      }
+
+      // Actualizar barra dinámica en Gráfica 2
+      if (barChart) {
+        barChart.data.datasets[0].data[5] = +deltaPct.toFixed(2);
+        barChart.data.datasets[0].backgroundColor[5] = deltaPct >= 0 ? '#1d4ed8' : '#dc2626';
+        barChart.update('none');
+      }
+    }
+
+    // =========================================================================
+    // 4. CONTROL DE PESTAÑAS Y DISPERSIÓN POR PERIODO / SEXENIO
+    // =========================================================================
+    function switchTab(tabId) {
+      ['a', 'b', 'c'].forEach(id => {
+        const panel = document.getElementById(`tab-panel-${id}`);
+        const btn = document.getElementById(`tab-btn-${id}`);
+        if (id === tabId) {
+          panel.classList.remove('hidden');
+          btn.className = 'tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-white text-blue-600 shadow-sm border border-slate-200 transition-all';
+        } else {
+          panel.classList.add('hidden');
+          btn.className = 'tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all';
+        }
+      });
+    }
+
+    function setScatterMode(mode) {
+      currentScatterMode = mode;
+      const btnP = document.getElementById('group-periodo');
+      const btnS = document.getElementById('group-sexenio');
+      if (mode === 'periodo') {
+        btnP.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all';
+        btnS.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all';
+      } else {
+        btnS.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition-all';
+        btnP.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all';
+      }
+      renderScatterChart(mode);
+    }
+
+    function renderScatterChart(mode) {
+      const ctxScatter = document.getElementById('scatterChart').getContext('2d');
+      if (scatterChart) scatterChart.destroy();
+
+      // Línea de regresión MCO: inv_pct = 23.50 - 0.0784 * i
+      const regLine = [
+        { x: 2.6, y: +(23.50 - 0.0784 * 2.6).toFixed(2) },
+        { x: 11.4, y: +(23.50 - 0.0784 * 11.4).toFixed(2) }
+      ];
+
+      let datasets = [];
+      const explanationBox = document.getElementById('scatterExplanation');
+
+      if (mode === 'periodo') {
+        const groups = [
+          { key: '2003-2007', label: '2003–2007 (Expansión inicial)', color: '#15803d' },
+          { key: '2008-2019', label: '2008–2019 (Auge industrial y tasas bajas)', color: '#f59e0b' },
+          { key: '2020-2024', label: '2020–2024 (Pandemia y Nearshoring)', color: '#ef4444' }
+        ];
+
+        datasets = groups.map(g => ({
+          label: g.label,
+          data: historicalData.filter(d => d.periodo === g.key).map(d => ({ x: d.i, y: d.inv_pct, anio: d.anio })),
+          backgroundColor: g.color,
+          pointRadius: 6.5,
+          pointHoverRadius: 8.5
+        }));
+
+        explanationBox.innerHTML = `
+          <h4 class="font-bold text-slate-900">Desglose por Periodos (Colores):</h4>
+          <p><span class="inline-block w-2.5 h-2.5 rounded-full bg-green-700 mr-1.5"></span><strong>Verde (2003–2007):</strong> Etapa inicial de expansión donde la inversión sube de 20.45% a 23.70% del PIB con tasas de 6.25% a 9.20%.</p>
+          <p><span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 mr-1.5"></span><strong>Naranja (2008–2019):</strong> Consolidación industrial en el rango más alto (23%–25% del PIB) favorecida por tasas bajas tras la crisis de 2009.</p>
+          <p><span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 mr-1.5"></span><strong>Rojo (2020–2024):</strong> Periodo de fuerte contraste: caída en 2020 (20.0%) por pandemia y posterior recuperación en 2023–2024 (24.4%) por nearshoring.</p>
+        `;
+      } else {
+        const groups = [
+          { key: 'Fox (2003-2006)', color: '#15803d' },
+          { key: 'Calderón (2007-2012)', color: '#f59e0b' },
+          { key: 'Peña Nieto (2013-2018)', color: '#2563eb' },
+          { key: 'López Obrador (2019-2024)', color: '#ef4444' }
+        ];
+
+        datasets = groups.map(g => ({
+          label: g.key,
+          data: historicalData.filter(d => d.sexenio === g.key).map(d => ({ x: d.i, y: d.inv_pct, anio: d.anio })),
+          backgroundColor: g.color,
+          pointRadius: 6.5,
+          pointHoverRadius: 8.5
+        }));
+
+        explanationBox.innerHTML = `
+          <h4 class="font-bold text-slate-900">Desglose por Sexenio (Colores):</h4>
+          <p><span class="inline-block w-2.5 h-2.5 rounded-full bg-green-700 mr-1.5"></span><strong>Verde — Fox (2003–2006):</strong> Promedio de 21.42% PIB y tasa de 7.36%.</p>
+          <p><span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 mr-1.5"></span><strong>Naranja — Calderón (2007–2012):</strong> Máximo promedio de inversión (24.33% PIB) con tasa de 5.53%.</p>
+          <p><span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-600 mr-1.5"></span><strong>Azul — Peña Nieto (2013–2018):</strong> Inversión alta (23.69% PIB) con la tasa promedio más baja (4.70%).</p>
+          <p><span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 mr-1.5"></span><strong>Rojo — López Obrador (2019–2024):</strong> Promedio de 22.12% PIB y tasa de 7.84% (contraste pandemia vs. nearshoring).</p>
+        `;
+      }
+
+      // Añadir línea de tendencia
+      datasets.push({
+        label: 'Tendencia promedio',
+        data: regLine,
+        showLine: true,
+        borderColor: '#0f172a',
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 0
+      });
+
+      scatterChart = new Chart(ctxScatter, {
+        type: 'scatter',
+        data: { datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const pt = ctx.raw;
+                  if (pt.anio) {
+                    return `Año ${pt.anio}: Tasa ${pt.x.toFixed(2)}% | Inversión ${pt.y.toFixed(2)}% PIB`;
+                  }
+                  return `Tendencia promedio: ${pt.y.toFixed(2)}% PIB`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              min: 2.5,
+              max: 11.5,
+              title: { display: true, text: 'Tasa de interés (%)', font: { weight: 'bold', size: 12 } },
+              grid: { color: '#f1f5f9' }
+            },
+            y: {
+              min: 19.8,
+              max: 25.3,
+              title: { display: true, text: 'Inversión (% del PIB del Bajío)', font: { weight: 'bold', size: 12 } },
+              grid: { color: '#f1f5f9' }
+            }
+          }
+        }
+      });
+    }
+
+    // =========================================================================
+    // 5. EVENTOS Y MODAL DE CÓDIGO R
+    // =========================================================================
+    const slider = document.getElementById('rateSlider');
+    slider.addEventListener('input', (e) => updateSimulator(e.target.value));
+
+    document.querySelectorAll('.scenario-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const rate = parseFloat(btn.getAttribute('data-rate'));
+        slider.value = rate;
+        updateSimulator(rate);
+      });
+    });
+
+    function toggleRModal() {
+      const modal = document.getElementById('rCodeModal');
+      modal.classList.toggle('hidden');
+    }
+
+    function copyRCode() {
+      const codeText = document.getElementById('rCodeText').innerText;
+      const textArea = document.createElement('textarea');
+      textArea.value = codeText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+
+      const copyBtn = document.getElementById('copyBtn');
+      copyBtn.textContent = '¡Copiado!';
+      copyBtn.classList.replace('bg-blue-600', 'bg-emerald-600');
+      setTimeout(() => {
+        copyBtn.textContent = 'Copiar Código';
+        copyBtn.classList.replace('bg-emerald-600', 'bg-blue-600');
+      }, 2000);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      updateSimulator(RATE_2024);
+    });
+  </script>
+</body>
+</html>
